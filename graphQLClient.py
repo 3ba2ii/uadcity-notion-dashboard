@@ -1,8 +1,8 @@
+import os
+
 import requests
 from dotenv import load_dotenv
-import os
-from graphql.queries.me_query import me_query
-from graphql.queries.session import session_query
+
 load_dotenv()
 
 
@@ -25,13 +25,3 @@ class GraphQLClient:
 
         raise Exception("Query failed to run by returning code of {}. {}".format(
             request.status_code, query))
-
-    def me(self):
-        query = me_query
-        result = self.run_query(query, {})  # execute query
-        return result
-
-    def session(self, id):
-        query = session_query
-        result = self.run_query(query, {'id': id})
-        return result
