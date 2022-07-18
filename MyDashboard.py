@@ -17,7 +17,6 @@ class MyDashboard:
         print('--- Started loading students ---')
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
-        print(self.print_json(self.students))
         self.set_students_progress()
         print('--- Finished loading students ---')
 
@@ -45,10 +44,11 @@ class MyDashboard:
         self.students[student_key][property_name] = property_value
 
     def set_page_id_to_students(self, database_id: str):
-        print('Started setting page id to students')
-        all_pages_in_db = self.notion_client.get_pages_per_database(database_id, {})[
-            'results']
-        for page in all_pages_in_db:
+        print('Started setting page id to students', database_id)
+        all_pages_in_db = self.notion_client.get_pages_per_database(
+            database_id, {})
+        self.print_json(all_pages_in_db)
+        for page in all_pages_in_db['results']:
             page_id = page['id']
             page_property_data = self.notion_client.get_property_value_per_page(
                 page_id, 'ID')
