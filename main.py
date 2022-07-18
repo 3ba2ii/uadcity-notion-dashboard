@@ -21,8 +21,7 @@ if __name__ == '__main__':
     # https://www.notion.so/812372d76eb4492f81089f79f3cddefa?v=aed9d7af707b4527a37fda7295ec7a34
     # https://www.notion.so/eeee053ef4ec44e6a666382bd54a1b39?v=2ad8662f2b2a465186d8854289950e9b
 
+    print('--- Started the script ---')
     my_dashboard = MyDashboard(['4725', '4731', '4732'])
     inq = Inquirer(my_dashboard)
     inq.execute_command('I want to update my students\'s progress on notion')
-
-    #print(json.dumps(students, indent=4))
