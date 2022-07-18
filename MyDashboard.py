@@ -17,7 +17,7 @@ class MyDashboard:
         print('--- Started loading students ---')
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
-
+        print(self.print_json(self.students))
         self.set_students_progress()
         print('--- Finished loading students ---')
 
