@@ -1,0 +1,21 @@
+name: Add env file to repo before running
+on: push
+jobs:
+  add-env-file:
+    name: Add .env file to repo before running
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Make a .env file
+        run: |
+          cd ${{ github.workspace }} && touch .env
+      - name: Add values to the .env file
+        run: |
+          echo "REQUEST_URL= ${{ secrets.REQUEST_URL }}" >> .env \
+          && echo "JWT_TOKEN= ${{ secrets.JWT_TOKEN }}" >> .env \
+          && echo "NOTION_TOKEN= ${{ secrets.NOTION_TOKEN }}" >> .env \
+          && echo "NOTION_INTEGRATION_API_KEY= ${{ secrets.NOTION_INTEGRATION_API_KEY }}" >> .env
+
+      - name: show env file
+        run: |
+          cat .env

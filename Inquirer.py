@@ -12,7 +12,7 @@ class Inquirer:
             inquirer.List('command',
                           message="What do you want to do?",
                           choices=[
-                              'I want to update my students\'s progress on notion', ],
+                              'I want to update my students\'s progress on notion'],
                           ),
         ]
 
