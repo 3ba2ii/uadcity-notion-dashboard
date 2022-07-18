@@ -1,0 +1,16 @@
+name: CI notify
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ['Add env file to repo before running']
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Repo
+        uses: actions/checkout@v2
