@@ -59,7 +59,7 @@ class NotionClient:
 
         return self.send_get_request(url)
 
-    def get_property_data_per_page(self, page_id: str, property_id: str):
+    def get_property_value_per_page(self, page_id: str, property_id: str):
 
         url = "https://api.notion.com/v1/pages/{page_id}/properties/{property_id}".format(
             page_id=page_id, property_id=property_id)

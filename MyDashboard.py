@@ -18,8 +18,8 @@ class MyDashboard:
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
 
-        self.print_json(self.students)
-        self.set_students_progress()
+        # self.print_json(self.students)
+        # self.set_students_progress()
 
     def get_students(self):
         return self.students
@@ -40,6 +40,19 @@ class MyDashboard:
 
     def get_students_progress(self):
         return self.students_progress
+
+    def add_property_to_student(self, student_key: str, property_name: str, property_value: str):
+        self.students[student_key][property_name] = property_value
+
+    def set_page_id_to_student(self, database_id: str):
+        all_pages_in_db = self.notion_client.get_pages_per_database(database_id, {})[
+            'results']
+        for page in all_pages_in_db:
+            page_id = page['id']
+            page_property_data = self.notion_client.get_property_value_per_page(
+                page_id, 'ID')
+            student_key = page_property_data['results'][0]['rich_text']['text']['content']
+            self.add_property_to_student(student_key, 'page_id',  page_id)
 
     def print_json(self, json_object: json):
         print(json.dumps(json_object, indent=4, ))
