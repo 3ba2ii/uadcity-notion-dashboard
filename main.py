@@ -4,10 +4,12 @@ import time
 
 import pandas as pd
 from dotenv import load_dotenv
+from Inquirer import Inquirer
 
 
 from MyDashboard import MyDashboard
 from NotionClient import NotionClient
+from joblib import Parallel, delayed
 
 load_dotenv()
 
@@ -18,34 +20,27 @@ if __name__ == '__main__':
     # https://www.notion.so/812372d76eb4492f81089f79f3cddefa?v=aed9d7af707b4527a37fda7295ec7a34
     # https://www.notion.so/eeee053ef4ec44e6a666382bd54a1b39?v=2ad8662f2b2a465186d8854289950e9b
     # https://www.notion.so/812372d76eb4492f81089f79f3cddefa?v=aed9d7af707b4527a37fda7295ec7a34
+    # https://www.notion.so/eeee053ef4ec44e6a666382bd54a1b39?v=2ad8662f2b2a465186d8854289950e9b
+    database_id = "eeee053ef4ec44e6a666382bd54a1b39"
+
+    ''' my_dashboard = MyDashboard(['4725', '4731', '4732'])
+
     start = time.process_time()
-    database_id = "812372d76eb4492f81089f79f3cddefa"
 
-    my_dashboard = MyDashboard(['4725', '4731', '4732'])
-    notion_client = NotionClient()
-
+    print('Getting notion pages...')
     my_dashboard.set_page_id_to_student(database_id)
+
+    print('Notion Pages loaded in: ', time.process_time() - start)
+
     students = my_dashboard.get_students()
 
-    #students_progress = my_dashboard.get_students_progress()
-    ''' notion_db = notion_client.get_property_value_per_page(
-        "1a5d64eae4e74b78bff334e6d3733282", "Completion Rate")
+    print('Updating student progress in notion...')
+    my_dashboard.update_students_progress()
+    print('Student progress updated in notion!')
 
-    # https://www.notion.so/Abdallah-1a5d64eae4e74b78bff334e6d3733282
-    add_completion_rate_payload = {"properties": {"Completion Rate":
-                                                  {
-                                                      "type": "number",
-                                                      "number": 4
-                                                  }
-                                                  }}
-    notion_client.update_property(
-        "1a5d64eae4e74b78bff334e6d3733282", add_completion_rate_payload)
-    print(json.dumps(notion_db, indent=4)) '''
+    print("--- %s seconds ---" % (time.process_time() - start)) '''
 
-    #print(json.dumps(all_pages_in_db, indent=4,))
-
-    print(json.dumps(students, indent=4))
-
-    print("--- %s seconds ---" % (time.process_time() - start))
+    my_dashboard = MyDashboard(['4725', '4731', '4732'])
+    Inquirer(my_dashboard)
 
     #print(json.dumps(students, indent=4))
