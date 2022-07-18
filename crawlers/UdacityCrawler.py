@@ -7,6 +7,8 @@ from graphql.queries.session import session_query
 from graphql.queries.fetch_lesson_progress import fetch_lesson_progress_query
 import json
 
+from joblib import Parallel, delayed
+
 
 class UdacityCrawler:
     client = GraphQLClient()
@@ -40,9 +42,12 @@ class UdacityCrawler:
 
     def get_students_for_my_sessions(self, session_ids: list[str]):
         students = {}
-        for session_id in session_ids:
-            students.update(
-                self.get_students_per_session_with_email_key(session_id))
+        res = Parallel(-1)(delayed(self.get_students_per_session)(session_id)
+                           for session_id in session_ids)
+
+        for i in range(len(res)-1):
+            students.update(res[i])
+
         return students
 
     def update_students_content_on_notion(self, notion_client: NotionClient, database_id: str, session_ids: list[str]):
