@@ -73,7 +73,6 @@ class UdacityCrawler:
                 }]}}
             res = notion_client.update_property(
                 page_id, updated_property_content)
-            print(res)
 
     def get_student_completion_rate_for_part(self, session_id: str, student_key: str, part_idx: int):
         student_progress = self.fetch_lesson_progress(session_id, student_key)[
