@@ -1,8 +1,11 @@
 from json import JSONDecoder
+from textwrap import indent
 from NotionClient import NotionClient
 from graphQLClient import GraphQLClient
-from graphql.queries.me_query import me_query
+from graphql.queries.me import me_query
 from graphql.queries.session import session_query
+from graphql.queries.fetch_lesson_progress import fetch_lesson_progress_query
+import json
 
 
 class UdacityCrawler:
@@ -17,7 +20,10 @@ class UdacityCrawler:
     def session(self, session_id):
         return self.client.run_query(session_query, {'id': session_id})
 
-    def get_students_per_session(self, session_id):
+    def fetch_lesson_progress(self, session_id: str, student_key: str):
+        return self.client.run_query(fetch_lesson_progress_query, {"session_id": session_id, "student_key": student_key})
+
+    def get_students_per_session(self, session_id: str):
         session = self.session(session_id)
         members = session['data']['session']['members']
         students = {member["student"]["key"]: member
@@ -25,21 +31,21 @@ class UdacityCrawler:
 
         return students
 
-    def get_students_per_session_with_email_key(self, session_id):
+    def get_students_per_session_with_email_key(self, session_id: str):
         session = self.session(session_id)
         members = session['data']['session']['members']
         students = {member["student"]["email"]: member
                     for member in members}
         return students
 
-    def get_students_for_my_sessions(self, session_ids):
+    def get_students_for_my_sessions(self, session_ids: list[str]):
         students = {}
         for session_id in session_ids:
             students.update(
                 self.get_students_per_session_with_email_key(session_id))
         return students
 
-    def update_students_content_on_notion(self, notion_client: NotionClient, database_id: str, session_ids: list[str],):
+    def update_students_content_on_notion(self, notion_client: NotionClient, database_id: str, session_ids: list[str]):
         notion_db = notion_client.get_pages_per_database(
             database_id, {"page_size": 100})
 
@@ -63,3 +69,10 @@ class UdacityCrawler:
             res = notion_client.update_property(
                 page_id, updated_property_content)
             print(res)
+
+    def get_student_completion_rate_for_part(self, session_id: str, student_key: str, part_idx: int):
+        student_progress = self.fetch_lesson_progress(session_id, student_key)[
+            'data']['fetch_lesson_progress']
+        student_progress_on_part = student_progress['parts'][part_idx]
+
+        return student_progress_on_part['aggregated_state']['completion_amount']

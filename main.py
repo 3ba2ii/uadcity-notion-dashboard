@@ -6,9 +6,10 @@ import requests
 from dotenv import load_dotenv
 from NotionClient import NotionClient
 from crawlers.UdacityCrawler import UdacityCrawler
-from graphql.queries.me_query import me_query
+from graphql.queries.me import me_query
 from graphql.queries.session import session_query
 from graphQLClient import GraphQLClient
+import inquirer
 
 load_dotenv()
 
@@ -53,5 +54,26 @@ if __name__ == '__main__':
     # https://www.notion.so/eeee053ef4ec44e6a666382bd54a1b39?v=2ad8662f2b2a465186d8854289950e9b
     notion_client = NotionClient()
     udacity_client = UdacityCrawler()
-    udacity_client.update_students_content_on_notion(
-        notion_client, "eeee053ef4ec44e6a666382bd54a1b39", ['4725', '4731', '4732'])
+
+    questions = [
+        inquirer.Text('session_id',
+                      message="What is the session id?",
+                      ),
+        inquirer.Text('student_key', message="What is the student key?"),
+    ]
+
+    answers = inquirer.prompt(questions)
+
+    # 'e7ede514-555b-11ec-bf4b-370b768ba062'
+    student_progress = udacity_client.get_student_completion_rate_for_part(
+        answers['session_id'], answers['student_key'], 1)
+
+    print(student_progress)
+
+    ''' udacity_client.update_students_content_on_notion(
+        notion_client, "eeee053ef4ec44e6a666382bd54a1b39", ['4725', '4731', '4732']) '''
+
+    ''' for session_id in ['4725', '4731', '4732']:
+        students = udacity_client.get_students_per_session(session_id)
+        pass
+    print(student_progress) '''
