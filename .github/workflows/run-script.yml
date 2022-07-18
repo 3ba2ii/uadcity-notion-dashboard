@@ -1,4 +1,4 @@
-name: CI notify
+name: Run script daily
 
 # Only trigger, when the build workflow succeeded
 on:
@@ -7,10 +7,20 @@ on:
     types:
       - completed
 
+  schedule:
+    - cron: '0 0 * * *' #runs at 00:00 UTC everyday
+
 jobs:
-  notify:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Repo
-        uses: actions/checkout@v2
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
+      - name: execute py script # run the main.py script
+        run: |
+          python3 main.py

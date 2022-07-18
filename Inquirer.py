@@ -8,6 +8,11 @@ class Inquirer:
 
     def __init__(self, dashboard: MyDashboard):
         self.dashboard = dashboard
+
+        self.commands_to_execute = {
+            'I want to update my students\'s progress on notion':
+                [{"fn": self.dashboard.set_page_id_to_students, "args": [database_id]},
+                 {"fn": self.dashboard.update_students_progress, "args": []}]}
         self.questions = [
             inquirer.List('command',
                           message="What do you want to do?",
@@ -16,14 +21,9 @@ class Inquirer:
                           ),
         ]
 
-        self.answers = inquirer.prompt(self.questions)
+        #self.answers = inquirer.prompt(self.questions)
 
-        self.commands_to_execute = {
-            'I want to update my students\'s progress on notion':
-                [{"fn": self.dashboard.set_page_id_to_students, "args": [database_id]},
-                 {"fn": self.dashboard.update_students_progress, "args": []}]}
-
-        self.execute_command(self.answers['command'])
+        # self.execute_command(self.answers['command'])
 
     def add_question(self, question):
         '''
