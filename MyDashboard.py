@@ -25,16 +25,15 @@ class MyDashboard:
         return self.students
 
     def get_student_completion_rate(self,  session_id: str, student_key: str):
-        return self.udacity_client.get_student_completion_rate_for_part(
-            session_id, student_key, 1)  # 1 is the part index
+        completion_rate = self.udacity_client.get_student_completion_rate_for_part(
+            session_id, student_key, 1)
+        return {student_key: completion_rate}  # 1 is the part index
 
     def set_students_progress(self):
-
-        for student_key in self.students:
-            print(student_key)
-            student_session_id = self.students[student_key]['enrollment']['session_id']
-            self.students_progress[student_key] = self.get_student_completion_rate(student_session_id,
-                                                                                   student_key)
+        res = Parallel(-1)(delayed(self.get_student_completion_rate)(self.students[student_key]['enrollment']['session_id'],
+                                                                     student_key)for student_key in self.students)
+        for single_res in res:
+            self.students_progress.update(single_res)
 
     def get_student_progress(self, student_key: str):
         return self.students_progress[student_key]

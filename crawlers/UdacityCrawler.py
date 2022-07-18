@@ -45,7 +45,7 @@ class UdacityCrawler:
         res = Parallel(-1)(delayed(self.get_students_per_session)(session_id)
                            for session_id in session_ids)
 
-        for i in range(len(res)-1):
+        for i in range(len(res)):
             students.update(res[i])
 
         return students
