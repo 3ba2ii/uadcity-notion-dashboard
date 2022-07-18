@@ -50,7 +50,7 @@ class UdacityCrawler:
 
         return students
 
-    def update_students_content_on_notion(self, notion_client: NotionClient, database_id: str, session_ids: list[str]):
+    def update_students_content_on_notion(self, notion_client: NotionClient, database_id: str, session_ids):
         notion_db = notion_client.get_pages_per_database(
             database_id, {"page_size": 100})
 
