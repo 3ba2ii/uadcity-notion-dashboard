@@ -2,7 +2,6 @@
 import json
 import time
 
-import pandas as pd
 from dotenv import load_dotenv
 from Inquirer import Inquirer
 
