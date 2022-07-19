@@ -76,5 +76,23 @@ class MyDashboard:
 
         print('Finished updating students progress')
 
+    def get_student_key_with_email(self, student_email: str):
+        students = list(self.students.values())
+        print(students[0])
+        student = filter(
+            lambda student: student['student']['email'] == student_email, students)
+
+        return list(student)[0]['student']['key'] if student else None
+
+    def get_student_session_id(self, student_email: str):
+        pass
+
+    def mark_student_as_excused(self, student_key: str):
+        pass
+
+    def store_attendance_for_student(self, student_key: str):
+        url = "https://www.notion.so/attendance-sheet-for-udacity-students-b9f9f8f8f9f94f9c9f9f9f9f9f9f9f9f"
+        pass
+
     def print_json(self, json_object: json):
         print(json.dumps(json_object, indent=4, ))

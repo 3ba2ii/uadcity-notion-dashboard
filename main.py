@@ -23,5 +23,9 @@ if __name__ == '__main__':
 
     print('--- Started the script ---')
     my_dashboard = MyDashboard(['4725', '4731', '4732'])
-    inq = Inquirer(my_dashboard)
-    inq.execute_command('I want to update my students\'s progress on notion')
+    # print(my_dashboard.print_json(my_dashboard.get_students()))
+    student_key = my_dashboard.get_student_key_with_email(
+        'abdelaty.magdi@gmail.com')
+    print(student_key)
+    #inq = Inquirer(my_dashboard)
+    #inq.execute_command('I want to update my students\'s progress on notion')
