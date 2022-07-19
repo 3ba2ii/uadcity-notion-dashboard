@@ -47,7 +47,6 @@ class MyDashboard:
         print('Started setting page id to students', database_id)
         all_pages_in_db = self.notion_client.get_pages_per_database(
             database_id, {})
-        self.print_json(all_pages_in_db)
         for page in all_pages_in_db['results']:
             page_id = page['id']
             page_property_data = self.notion_client.get_property_value_per_page(

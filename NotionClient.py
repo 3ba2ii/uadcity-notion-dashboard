@@ -15,7 +15,6 @@ class NotionClient:
 
     def __init__(self):
         super(NotionClient, self).__init__()
-        print(os.environ["NOTION_INTEGRATION_API_KEY"])
 
     def send_get_request(self, url):
         response = requests.get(url, headers=self.headers)
