@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from joblib import Parallel, delayed
 
 from crawlers.UdacityCrawler import UdacityCrawler
-from NotionClient import NotionClient
+from clients.NotionClient import NotionClient
 from utils.read_data_from_csv import read_emails_from_csv
 
 load_dotenv()
@@ -25,9 +25,8 @@ class MyDashboard:
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
 
-
         self.set_students_progress()
-        print('--- Finished loading students ---')
+        print('--- ✅ Finished loading students ---')
 
     def get_students(self):
         return self.students
@@ -58,7 +57,8 @@ class MyDashboard:
         self.students[student_key][property_name] = property_value
 
     def set_page_id_to_students(self, database_id: str):
-        print('Started setting page id to students')
+        print('⌛️ Started setting page id to students \n')
+
         all_pages_in_db = self.notion_client.get_pages_per_database(
             database_id, {})
         for page in all_pages_in_db['results']:
@@ -68,7 +68,7 @@ class MyDashboard:
             student_key = page_property_data['results'][0]['rich_text']['text']['content']
             self.add_property_to_student(student_key, 'page_id',  page_id)
 
-        print('Finished setting page id to students')
+        print('✅ Finished setting page id to students \n')
 
     def update_student_progress(self, student: dict):
         try:
@@ -81,16 +81,16 @@ class MyDashboard:
             self.notion_client.update_property(
                 page_id, completion_rate_payload)
         except Exception as e:
-            print('Error updating completion rate for the student',
+            print('Error updating completion rate for the student\n',
                   student['student']['email'])
 
     def update_students_progress(self):
-        print('Started updating students progress')
+        print('⌛️ Started updating students progress\n')
 
         Parallel(-1)(delayed(self.update_student_progress)(student)
                      for _, student in self.students.items())
 
-        print('Finished updating students progress')
+        print('✅ Finished updating students progress\n')
 
     def get_student_with_email(self, student_email: str):
         students = list(self.students.values())

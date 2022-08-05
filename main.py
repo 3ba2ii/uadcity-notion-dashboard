@@ -19,4 +19,4 @@ if __name__ == '__main__':
     inq = Inquirer(my_dashboard)
     #inq.execute_command('I want to update my students\'s progress on notion')
 
-    print('Finished in: ', time.process_time() - start)
+    print('✅ Finished in: ', time.process_time() - start)
