@@ -1,14 +1,21 @@
 import json
-from concurrent.futures import ThreadPoolExecutor
+import os
+
+import requests
+from dotenv import load_dotenv
+from joblib import Parallel, delayed
 
 from crawlers.UdacityCrawler import UdacityCrawler
 from NotionClient import NotionClient
-from joblib import Parallel, delayed
+from utils.read_data_from_csv import read_emails_from_csv
+
+load_dotenv()
 
 
 class MyDashboard:
     students = {}
     sessions = []
+    headers = {"Authorization": "Bearer " + os.environ["JWT_TOKEN"]}
 
     def __init__(self, sessions: list[str]):
         self.notion_client = NotionClient()
@@ -17,6 +24,8 @@ class MyDashboard:
         print('--- Started loading students ---')
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
+
+        print(len(self.students))
         self.set_students_progress()
         print('--- Finished loading students ---')
 
@@ -38,13 +47,17 @@ class MyDashboard:
             # self.students_progress.update(single_res)
 
     def get_student_progress(self, student_key: str):
+        if(student_key not in self.students):
+            return None
         return self.students[student_key]['completion_rate']
 
     def add_property_to_student(self, student_key: str, property_name: str, property_value: str):
+        if(student_key not in self.students):
+            return
         self.students[student_key][property_name] = property_value
 
     def set_page_id_to_students(self, database_id: str):
-        print('Started setting page id to students', database_id)
+        print('Started setting page id to students')
         all_pages_in_db = self.notion_client.get_pages_per_database(
             database_id, {})
         for page in all_pages_in_db['results']:
@@ -57,16 +70,18 @@ class MyDashboard:
         print('Finished setting page id to students')
 
     def update_student_progress(self, student: dict):
-        page_id = student['page_id']
-        completion_rate = student['completion_rate']
-        completion_rate_payload = {"properties": {"Completion Rate":
-                                                  {
-                                                      "type": "number",
-                                                      "number": completion_rate
-                                                  }
-                                                  }}
-        self.notion_client.update_property(
-            page_id, completion_rate_payload)
+        try:
+            page_id = student['page_id']
+            completion_rate = student['completion_rate']
+            completion_rate_payload = {"properties":
+                                       {"Completion Rate":
+                                        {"type": "number",
+                                         "number": completion_rate}}}
+            self.notion_client.update_property(
+                page_id, completion_rate_payload)
+        except Exception as e:
+            print('Error updating completion rate', e)
+            return
 
     def update_students_progress(self):
         print('Started updating students progress')
@@ -76,23 +91,51 @@ class MyDashboard:
 
         print('Finished updating students progress')
 
-    def get_student_key_with_email(self, student_email: str):
+    def get_student_with_email(self, student_email: str):
         students = list(self.students.values())
-        print(students[0])
         student = filter(
             lambda student: student['student']['email'] == student_email, students)
 
-        return list(student)[0]['student']['key'] if student else None
+        return list(student)[0] if student else None
 
-    def get_student_session_id(self, student_email: str):
-        pass
+    def get_student_key_with_email(self, student_email: str):
+        student = self.get_student_with_email(student_email)
 
-    def mark_student_as_excused(self, student_key: str):
-        pass
+        return student['student']['key'] if student else None
 
-    def store_attendance_for_student(self, student_key: str):
-        url = "https://www.notion.so/attendance-sheet-for-udacity-students-b9f9f8f8f9f94f9c9f9f9f9f9f9f9f9f"
-        pass
+    def mark_student_as_excused(self, student_email: str):
+        student = self.get_student_with_email(student_email)
+        student_key = student['student']['key']
+        student_session_id = student['enrollment']['session_id']
+        print(student_session_id)
+        url = f'https://connect-dashboard.udacity.com/api/uhome/v1/sessions/{student_session_id}/instances/42376/excuse_attendance'
+        payload = {student_key: student_key}
+        request = requests.post(url,
+                                json=payload, headers=self.headers)
+
+        return request.text
+
+    def set_attendance_for_student(self, student_email: str, session_index: int, state: str):
+        student = self.get_student_with_email(student_email)
+        self.print_json(student)
+        student_session_id = student['enrollment']['session_id']
+        attendance_instance = student['attendances'][session_index]
+        session_insance_id = attendance_instance['instance_id']
+        attendance_id = attendance_instance['id']
+
+        payload = {"state": state}
+        url = f'https://connect-dashboard.udacity.com/api/uhome/v1/sessions/{student_session_id}/instances/{session_insance_id}/attendances/{attendance_id}'
+        print(url)
+        res = requests.patch(url, json=payload, headers=self.headers)
+
+        return res.json()
+
+    def set_attendance_for_session(self, session_idx, state: str):
+        int_session_idx = int(session_idx)
+        emails = read_emails_from_csv()
+        responses = [self.set_attendance_for_student(
+            email, int_session_idx, state) for email in emails]
+        return responses
 
     def print_json(self, json_object: json):
         print(json.dumps(json_object, indent=4, ))
