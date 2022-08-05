@@ -7,7 +7,6 @@ def read_emails_from_csv(file_path: str = 'attendance.csv'):
         csvreader = csv.reader(file)
         emails = []
         for row in csvreader:
-            # print(row)
             if row[2] == 'Email':
                 continue
             emails.append(row[2])

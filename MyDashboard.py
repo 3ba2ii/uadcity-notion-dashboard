@@ -25,7 +25,6 @@ class MyDashboard:
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
 
-        self.print_json(self.students)
 
         self.set_students_progress()
         print('--- Finished loading students ---')
@@ -62,7 +61,6 @@ class MyDashboard:
         print('Started setting page id to students')
         all_pages_in_db = self.notion_client.get_pages_per_database(
             database_id, {})
-        print(all_pages_in_db)
         for page in all_pages_in_db['results']:
             page_id = page['id']
             page_property_data = self.notion_client.get_property_value_per_page(
@@ -120,7 +118,6 @@ class MyDashboard:
 
     def set_attendance_for_student(self, student_email: str, session_index: int, state: str):
         student = self.get_student_with_email(student_email)
-        self.print_json(student)
         student_session_id = student['enrollment']['session_id']
         attendance_instance = student['attendances'][session_index]
         session_insance_id = attendance_instance['instance_id']
@@ -128,7 +125,6 @@ class MyDashboard:
 
         payload = {"state": state}
         url = f'https://connect-dashboard.udacity.com/api/uhome/v1/sessions/{student_session_id}/instances/{session_insance_id}/attendances/{attendance_id}'
-        print(url)
         res = requests.patch(url, json=payload, headers=self.headers)
 
         return res.json()

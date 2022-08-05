@@ -56,7 +56,6 @@ class Inquirer:
         self.answers.update(answers)
         self.dashboard.set_attendance_for_session(
             self.answers['session_idx'],  self.answers['state']),
-        print(self.answers)
 
     def add_question(self, question):
         '''
