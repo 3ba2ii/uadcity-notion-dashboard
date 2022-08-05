@@ -25,7 +25,8 @@ class MyDashboard:
         self.students = self.udacity_client.get_students_for_my_sessions(
             sessions)
 
-        print(len(self.students))
+        self.print_json(self.students)
+
         self.set_students_progress()
         print('--- Finished loading students ---')
 
@@ -38,8 +39,9 @@ class MyDashboard:
         return {student_key: completion_rate}  # 1 is the part index
 
     def set_students_progress(self):
-        res = Parallel(-1)(delayed(self.get_student_completion_rate)(self.students[student_key]['enrollment']['session_id'],
-                                                                     student_key)for student_key in self.students)
+        res = Parallel(-1)(delayed(self.get_student_completion_rate)
+                           (self.students[student_key]['enrollment']['session_id'],
+                            student_key)for student_key in self.students)
         for single_res in res:
             student_key = list(single_res.keys())[0]
             self.add_property_to_student(
@@ -60,6 +62,7 @@ class MyDashboard:
         print('Started setting page id to students')
         all_pages_in_db = self.notion_client.get_pages_per_database(
             database_id, {})
+        print(all_pages_in_db)
         for page in all_pages_in_db['results']:
             page_id = page['id']
             page_property_data = self.notion_client.get_property_value_per_page(
@@ -80,8 +83,8 @@ class MyDashboard:
             self.notion_client.update_property(
                 page_id, completion_rate_payload)
         except Exception as e:
-            print('Error updating completion rate', e)
-            return
+            print('Error updating completion rate for the student',
+                  student['student']['email'])
 
     def update_students_progress(self):
         print('Started updating students progress')

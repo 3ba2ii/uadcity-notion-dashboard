@@ -20,7 +20,8 @@ jobs:
         run: |
           echo "REQUEST_URL=${{ secrets.REQUEST_URL }}" >> $GITHUB_ENV \
           && echo "JWT_TOKEN= ${{ secrets.JWT_TOKEN }}" >> $GITHUB_ENV \
-          && echo "NOTION_INTEGRATION_API_KEY= ${{ secrets.NOTION_INTEGRATION_API_KEY }}" >> $GITHUB_ENV
+          && echo "NOTION_INTEGRATION_API_KEY= ${{ secrets.NOTION_INTEGRATION_API_KEY }}" >> $GITHUB_ENV \
+          && echo "DATABASE_ID= ${{ secrets.DATABASE_ID }}" >> $GITHUB_ENV
 
       - name: List files in the repository
         run: |

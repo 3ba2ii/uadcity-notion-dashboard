@@ -5,7 +5,7 @@ from MyDashboard import MyDashboard
 load_dotenv()
 
 script_env = os.environ['SCRIPT_ENV']
-database_id = "eeee053ef4ec44e6a666382bd54a1b39"
+database_id = os.environ['DATABASE_ID']
 
 
 class Inquirer:
