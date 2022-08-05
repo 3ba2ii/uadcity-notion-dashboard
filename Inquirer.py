@@ -36,6 +36,10 @@ class Inquirer:
         if script_env and script_env == 'dev':
             self.answers.update(inquirer.prompt(self.questions))
             self.execute_command(self.answers['command'])
+        else:
+            # update students progress on notion
+            self.dashboard.set_page_id_to_students(database_id)
+            self.dashboard.update_students_progress()
 
     def get_file_path_from_user(self):
         self.question = [
